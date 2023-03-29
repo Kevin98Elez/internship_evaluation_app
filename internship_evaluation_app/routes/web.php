@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Student;
 use App\Models\Evaluation;
 use App\Models\Mentor;
+use app\models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,15 +22,21 @@ use App\Models\Mentor;
 Route::get('/', function () {
     return view('welcome');
 });
+// dashboard routes
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        $users = User::all();
+        return view('dashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::resource('users', UserController::class)
+    ->only(['index', 'store'])
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    }
 
 // routes courses
     Route::get('courses', function () {
@@ -62,7 +69,7 @@ Route::middleware('auth')->group(function () {
         return view('mentors.index', compact('mentors'));
     })->name('mentors');
 
-});
+);
 
 
 require __DIR__.'/auth.php';
